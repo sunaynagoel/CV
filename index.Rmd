@@ -54,11 +54,11 @@ Aside
 
 ```{r}
 # When in export mode the little dots are unaligned, so fix that. 
+# When in export mode the little dots are unaligned, so fix that. 
 if(PDF_EXPORT){
-  cat("View this CV online with links at _sunaynagoel.me/cv_")
+  cat("[View this CV online](https://sunaynagoel.github.io/CV/Sunayna Goel’s CV.pdf)")
 } else {
   cat("[<i class='fas fa-download'></i> Download a PDF of this CV](https://sunaynagoel.github.io/CV/Sunayna Goel’s CV.pdf)")
-  
 }
 ```
 
@@ -105,16 +105,6 @@ cat(sanitize_links(intro_text))
 ```
 
 
-
-Education {data-icon=graduation-cap data-concise=true}
---------------------------------------------------------------------------------
-
-```{r}
-print_section(position_data, 'education')
-```
-
-
-
 Key Accomplishments {data-icon=laptop}
 --------------------------------------------------------------------------------
 
@@ -122,6 +112,9 @@ Key Accomplishments {data-icon=laptop}
 print_section(position_data, 'key_accomplishments')
 ```
 
+<br>
+<br>
+<br>
 
 
 Industry Experience {data-icon=suitcase}
@@ -147,6 +140,16 @@ Selected Data Science Writing {data-icon=chart-line}
 ```{r}
 print_section(position_data, 'data_science_writings')
 ```
+
+
+
+Education {data-icon=graduation-cap data-concise=true}
+--------------------------------------------------------------------------------
+
+```{r}
+print_section(position_data, 'education')
+```
+
 
 References {data-icon=book}
 --------------------------------------------------------------------------------
