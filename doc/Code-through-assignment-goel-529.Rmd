@@ -1,0 +1,156 @@
+---
+title: "Code-through-assignemnt-goel-529"
+author: "Sunayna Goel"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    theme: cerulean
+    highlight: textmate
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( echo=TRUE, message=FALSE, warning=FALSE, fig.width=10 )
+```
+
+### Code Through Assignment
+
+
+# Introduction 
+
+**gganimate** package makes it poosible to create animation in R. **gganimate** is an extention of **ggplot2**, which belongs to **ggplot** family. **gganimate** allows to add **tranistions**, **changes in views**, and **shadows** to the map in form of animation. When creating an animation, plot does not move. Instead, many plots are created simulatneously and stiched together to give an illusion of the movement. For better animation a data set should be able to generate more plots.   
+
+## Getting started 
+
+The following packages and libraries are needed for this purpose. 
+```{r}
+# install.packages() cannot be included in an RMD file when knitting
+
+#install.packages("prettydoc")
+#install.packages("ggplot2")
+#devtools::install_github('thomasp85/gganimate',force = TRUE)
+#install.packages ("viridis")
+#install.packages("dplyr")
+#install.packages("readr")
+#install.packages("animation")
+
+#load_packages
+
+library(knitr)
+library(prettydoc)
+library(ggplot2)
+library(gganimate)
+library(viridis)
+library(dplyr)
+library(readr)
+library(animation)
+library (tidyverse)
+```
+
+An excerpt of dataset from **Gapminder.org** is used for this assignment. **gapmider** package is availbale in CRAN or github, the main obeject is **gapminder** tibble. The dataset contains life expectancy, GDP, total population, every five years from 1952 to 2007 for 142 countries. 
+
+```{r}
+#install.packages("gapminder")
+
+library(gapminder)
+head (gapminder)
+```
+
+The basic **ggplot** function presents plot in static form. 
+
+## Static plot
+
+```{r}
+plot1 <- ggplot(
+  gapminder, 
+  aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)
+  ) +
+  geom_point(show.legend = FALSE, alpha = 0.5) +
+  scale_color_viridis_d() +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy")
+plot1
+```
+
+Using function from the library **gganimate** animation can be produced. 
+
+## Animation
+
+### Animation using transition
+
+using **transition_time()** the transition length between the states will be set to correspond to the actual time difference between them.
+
+label variable **frame_time** gives the time that the current frame corresponds to.
+
+```{r eval=FALSE}
+
+theme_set(theme_bw())
+fig2<- ggplot(gapminder, aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)) +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy")+ transition_time(year) +
+  labs(title = "Year: {frame_time}")
+setwd("~/Desktop/figures")
+anim_save("fig2.gif", fig2)
+```
+
+![](figures/fig2.gif)
+
+### Animation using change in view 
+
+```{r eval=FALSE}
+theme_set(theme_bw())
+fig3 <- ggplot(gapminder, aes(gdpPercap, lifeExp, size = pop, colour = country)) +
+  geom_point(alpha = 0.7) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  facet_wrap(~continent) +
+  theme(legend.position = 'none') +
+  labs(title = 'Year: {frame_time}', x = 'GDP per capita', y = 'life expectancy') +
+  transition_time(year) +
+  ease_aes('linear')
+
+setwd("~/Desktop/figures")
+anim_save("fig3.gif", fig3)
+```
+
+![](figures/fig3.gif)
+
+### Animation using original data as background mark or shadows.
+
+```{r eval=FALSE}
+
+theme_set(theme_bw())
+fig4<- ggplot(gapminder, aes(x = gdpPercap, y=lifeExp, size = pop, colour = country)) +
+  geom_point(show.legend = FALSE, alpha = 0.7) +
+  scale_colour_manual(values = country_colors) +
+  scale_size(range = c(2, 12)) +
+  scale_x_log10() +
+  labs(x = "GDP per capita", y = "Life expectancy")+ transition_time(year) +
+  labs(title = "Year: {frame_time}") + shadow_mark(alpha = 0.3, size = 0.5)
+setwd("~/Desktop/figures")
+anim_save("fig4.gif", fig4)
+```
+
+![](figures/fig4.gif)
+
+
+## Acknowledgement 
+There are many functions available within this package. The following resources were used to create this tutorial for the assignment. To explore more please click the following links.   
+
+[datanovia](https://www.datanovia.com/en/blog/gganimate-how-to-create-plots-with-beautiful-animation-in-r/)   
+
+[github](https://gist.github.com/thomasp85/05169ad44ddcc8ed56da6ff7bf7fbe36)   
+
+[cran.rstudio](https://cran.r-project.org/web/packages/gganimate/gganimate.pdf)   
+
+[thomasp85.github](https://github.com/thomasp85/gganimate)  
+
+[Gapminder-CRAN](https://cran.r-project.org/web/packages/gganimate/gganimate.pdf)
+
