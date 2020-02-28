@@ -1,0 +1,146 @@
+---
+title: "Code-through-assignemnt-Goel-527"
+author: "Sunayna Goel"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output:
+  html_document:
+    df_print: paged
+    theme: cerulean
+    highlight: textmate
+    toc: yes
+    toc_float: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set( echo=TRUE, message=FALSE, warning=FALSE )
+```
+
+### Code Through Assignment
+
+
+# Introduction 
+
+**Text Mining** in R makes it possible to identify most frequently used keywords in a text paragraph. It allows a user to create **word cloud**, or **text cloud** as a visual representation of these keywords . **Word cloud** is a visually engaging and  powerful communication tool. Text mining packages such as **qunateda**, **tm**, **stringr** provide robust tools for text analysis by making it easy to manipulate data, manage corpus and analyse keywords. Packages **wordcloud** and **wordcloud2** make it possible to quickly visualise keywords as word-cloud. 
+
+## Getting started 
+
+The following packages and libraries are needed for this purpose. 
+```{r}
+# install.packages() cannot be included in an RMD file when knitting
+
+#install.packages("quanteda")
+#install.packages ("wordcloud")
+#install.packages ("wordcloud2")
+#install.packages("tidyverse")
+
+#load_packages
+
+library( quanteda )  ## Manage and analyse textual data
+library(wordcloud)   ## Plots a cloud of words shared across documents
+library(wordcloud2)  ## Provides traditional wordcloud with HTML5
+library(tidyverse)   ## Includes popular packages used in data analyses
+```
+
+## Data download
+For the purpose of this tutorial a local .txt is file is used. It is downloded in R using **read.table()** which convert .txt file to a datatable with two columns and seven rows in this case. First columns is just row numbers and second column has all the data. 
+
+```{r results='hide'}
+#Load local .txt file 
+setwd( "/Users/sunaynaagarwal/Desktop" )
+organic.text<- readLines("Textanalysis.txt",warn=FALSE )
+organic.text
+```
+
+## Data Manipulation
+
+In this step the text document is converted to lower case. It is then turned to **corpus** for data manipulation. Punctuation and filler words are removed. 
+
+```{r results='hide'}
+
+#convert in lower case
+organic.text <- tolower (organic.text)
+
+#make corpus
+corp.organic <- corpus(organic.text)
+
+#corpus content
+corp.organic
+
+# remove punctuation 
+tokens <- tokens( corp.organic, what="word", remove_punct=TRUE )
+head( tokens )
+
+# remove filler words like the, and, a, to
+tokens <- tokens_remove( tokens, c( stopwords("english"), "nbsp" ), padding=F )
+
+head( tokens )
+
+```
+
+### Top keywords
+
+Identify top 50 keywords. 
+```{r}
+#Top 10 token without stemming
+my.matrix<-tokens %>% dfm( stem=F ) %>% topfeatures(n=50 )
+head(my.matrix)
+
+```
+## Package Wordcloud
+
+### Data Matrix
+
+Convert the output in a matrix for generating the **Word Cloud**
+
+```{r}
+mat <- as.matrix(my.matrix)
+my.frequency <- sort(rowSums(mat),decreasing=TRUE)
+my.data <- data.frame(word = names(my.frequency),freq=my.frequency)
+head(my.data, 7)
+```
+
+### Output Word Cloud
+
+Wordcloud allows the user to generate cloud with keywords in random order or in non-random order keeping high frequency words towards the center. There are other arguments to adjust the colors and rotation of the keywords in the actual cloud. 
+
+```{r }
+# reproduces output
+set.seed(101)
+# generate word cloud using keywords at random
+wordcloud(words = my.data$word, freq = my.data$freq, rot.per=0.30, colors=brewer.pal(7, "Dark2"), min.freq=4, max.words = 200, random.order=FALSE)
+```
+
+## Package Wordcloud2
+
+### Data Table
+Convert the output to a datatable for generating the **Word Cloud**
+
+
+```{r}
+#convert tokens to a datatable
+my.df<-tokens %>% dfm( stem=F ) %>% topfeatures(n=50 )
+data.table<- data.frame( word=names(my.df), freq=my.df,row.names=NULL )
+
+```
+
+### Output WordCloud
+Wordcloud2 offer eveything that wordcloud offers plus more. It allows user to chnage background color and produce output in a distinctive shape. 
+
+```{r}
+# reproduces output
+set.seed(1234)
+wordcloud2(data= data.table, color=rep_len( c("forestgreen","darkcyan"), nrow(demoFreq)),size = 0.7, shape = 'pentagon',minRotation = -pi/8, maxRotation = -pi/8, rotateRatio = .7, backgroundColor = 'khaki')
+```
+
+## Acknowledgement
+
+The following resources were used to create this tutorial for the assignment. To explore more please click the following links.   
+
+[STHDA](http://www.sthda.com/english/wiki/text-mining-and-word-cloud-fundamentals-in-r-5-simple-steps-you-should-know)   
+
+[cran.rstudio- WordCloud](https://cran.r-project.org/web/packages/wordcloud/wordcloud.pdf) 
+
+[cran.rstudio- WordCloud2](https://cran.r-project.org/web/packages/wordcloud2/vignettes/wordcloud.html)  
+
+[rGraph Gallery](https://www.r-graph-gallery.com/wordcloud.html)  
+
